@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gabriela Oliveira — Editora de Vídeos</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #F9F6F1;
+    --warm-white: #FDFBF8;
+    --charcoal: #1A1A1A;
+    --mid: #5A5A5A;
+    --light: #B0A99A;
+    --accent: #C9A96E;
+    --accent-soft: #EDE3D4;
+    --border: #E8E2D9;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--warm-white);
+    color: var(--charcoal);
+    overflow-x: hidden;
+  }
+
+  header {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 2.5rem 5vw;
+    background: var(--cream);
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: -120px; right: -120px;
+    width: 480px; height: 480px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #E8D9C0 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -80px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #DDD4C4 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    opacity: 0;
+    animation: fadeUp .7s .1s forwards;
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    letter-spacing: .04em;
+    color: var(--charcoal);
+    text-decoration: none;
+  }
+
+  nav a {
+    font-size: .8rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--mid);
+    text-decoration: none;
+    transition: color .2s;
+  }
+  nav a:hover { color: var(--accent); }
+
+  .hero-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4rem 0 3rem;
+    opacity: 0;
+    animation: fadeUp .8s .3s forwards;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .72rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+  }
+  .hero-tag::before {
+    content: '';
+    display: block;
+    width: 28px; height: 1px;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    line-height: 1.05;
+    font-weight: 600;
+    color: var(--charcoal);
+    max-width: 14ch;
+  }
+
+  h1 em { font-style: italic; color: var(--accent); }
+
+  .hero-sub {
+    margin-top: 2rem;
+    font-size: 1rem;
+    color: var(--mid);
+    font-weight: 300;
+    max-width: 46ch;
+    line-height: 1.7;
+  }
+
+  .hero-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    opacity: 0;
+    animation: fadeUp .8s .5s forwards;
+  }
+
+  .hero-contacts {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-contacts a {
+    font-size: .78rem;
+    letter-spacing: .08em;
+    color: var(--mid);
+    text-decoration: none;
+    transition: color .2s;
+  }
+  .hero-contacts a:hover { color: var(--accent); }
+
+  .btn-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .85rem 2rem;
+    background: var(--charcoal);
+    color: #fff;
+    font-size: .8rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background .25s, transform .2s;
+  }
+  .btn-cta:hover { background: var(--accent); transform: translateY(-1px); }
+
+  .services {
+    padding: 5rem 5vw;
+    background: var(--charcoal);
+    color: #fff;
+  }
+
+  .section-label {
+    font-size: .72rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 3rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #333;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: #333;
+  }
+
+  .service-card {
+    background: var(--charcoal);
+    padding: 2.2rem 1.8rem;
+    transition: background .25s;
+  }
+  .service-card:hover { background: #252525; }
+
+  .service-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    color: #333;
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  .service-title {
+    font-size: .9rem;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: .5rem;
+  }
+
+  .service-desc {
+    font-size: .78rem;
+    color: #888;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .portfolio {
+    padding: 5rem 5vw;
+    background: var(--warm-white);
+  }
+
+  .portfolio-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .portfolio-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1.1;
+  }
+
+  .portfolio-header h2 em { font-style: italic; color: var(--accent); }
+
+  .portfolio-count {
+    font-size: .78rem;
+    color: var(--light);
+    letter-spacing: .1em;
+  }
+
+  .videos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .video-card {
+    overflow: hidden;
+    background: var(--cream);
+    text-decoration: none;
+    display: block;
+    transition: transform .25s, box-shadow .25s;
+  }
+  .video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(0,0,0,.08);
+  }
+
+  .video-thumb {
+    position: relative;
+    aspect-ratio: 9/16;
+    background: var(--accent-soft);
+    overflow: hidden;
+  }
+
+  .video-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .4s ease;
+  }
+
+  .video-card:hover .video-thumb img { transform: scale(1.05); }
+
+  .play-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(26,26,26,0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .3s;
+  }
+
+  .video-card:hover .play-overlay { background: rgba(26,26,26,.5); }
+
+  .play-btn {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0);
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  .video-card:hover .play-btn { transform: scale(1); }
+
+  .play-btn svg {
+    width: 18px; height: 18px;
+    fill: var(--charcoal);
+    margin-left: 3px;
+  }
+
+  .video-info {
+    padding: 1rem;
+  }
+
+  .video-num {
+    font-size: .65rem;
+    letter-spacing: .12em;
+    color: var(--light);
+    margin-bottom: .3rem;
+  }
+
+  .video-title {
+    font-size: .88rem;
+    font-weight: 500;
+    color: var(--charcoal);
+  }
+
+  .contact {
+    padding: 5rem 5vw;
+    background: var(--cream);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .contact h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.15;
+    margin-bottom: 1.2rem;
+  }
+
+  .contact h2 em { font-style: italic; color: var(--accent); }
+
+  .contact p {
+    font-size: .9rem;
+    color: var(--mid);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    color: var(--charcoal);
+    transition: color .2s;
+  }
+  .contact-link:hover { color: var(--accent); }
+
+  .contact-icon {
+    width: 42px; height: 42px;
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .contact-icon svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+
+  .contact-link-label { font-size: .72rem; letter-spacing: .08em; color: var(--light); }
+  .contact-link-value { font-size: .9rem; font-weight: 500; }
+
+  footer {
+    padding: 1.8rem 5vw;
+    background: var(--charcoal);
+    text-align: center;
+    font-size: .72rem;
+    letter-spacing: .1em;
+    color: #555;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 680px) {
+    .contact { grid-template-columns: 1fr; gap: 2rem; }
+    .videos-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .services-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="#" class="logo">Gabriela Oliveira</a>
+    <a href="#portfolio">Portfólio</a>
+  </nav>
+  <div class="hero-body">
+    <span class="hero-tag">Editora de vídeos curtos para internet</span>
+    <h1>Vídeos que <em>param</em> o scroll.</h1>
+    <p class="hero-sub">Edição de conteúdo curto com ritmo, identidade e resultado — para criadores, marcas e UGC.</p>
+  </div>
+  <div class="hero-footer">
+    <div class="hero-contacts">
+      <a href="mailto:contatougc.gabriela@gmail.com">contatougc.gabriela@gmail.com</a>
+      <a href="https://wa.me/5531999220574">+55 31 99922-0574</a>
+    </div>
+    <a href="#portfolio" class="btn-cta">Ver portfólio →</a>
+  </div>
+</header>
+
+<section class="services">
+  <div class="section-label">Serviços</div>
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-num">01</div>
+      <div class="service-title">Edição de Reels & TikTok</div>
+      <div class="service-desc">Cortes dinâmicos, ritmo e narrativa pensados para o formato vertical.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">02</div>
+      <div class="service-title">Edição com Áudio & Trilha</div>
+      <div class="service-desc">Seleção musical, sincronização de beats e equilíbrio de áudio profissional.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">03</div>
+      <div class="service-title">Legendas Animadas</div>
+      <div class="service-desc">Legendas estilizadas que aumentam o tempo de retenção do vídeo.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">04</div>
+      <div class="service-title">Motion & Efeitos</div>
+      <div class="service-desc">Transições, motion graphics e efeitos que elevam a produção do conteúdo.</div>
+    </div>
+  </div>
+</section>
+
+<section class="portfolio" id="portfolio">
+  <div class="portfolio-header">
+    <h2>Trabalhos <em>recentes</em></h2>
+    <span class="portfolio-count">08 vídeos</span>
+  </div>
+  <div class="videos-grid" id="videosGrid"></div>
+</section>
+
+<section class="contact">
+  <div>
+    <h2>Vamos criar <em>juntos?</em></h2>
+    <p>Estou disponível para projetos freelancer de edição de vídeos curtos. Entra em contato e conta o que você precisa!</p>
+  </div>
+  <div class="contact-links">
+    <a href="mailto:contatougc.gabriela@gmail.com" class="contact-link">
+      <div class="contact-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+      </div>
+      <div>
+        <div class="contact-link-label">E-mail</div>
+        <div class="contact-link-value">contatougc.gabriela@gmail.com</div>
+      </div>
+    </a>
+    <a href="https://wa.me/5531999220574" class="contact-link" target="_blank">
+      <div class="contact-icon">
+        <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      </div>
+      <div>
+        <div class="contact-link-label">WhatsApp</div>
+        <div class="contact-link-value">+55 31 99922-0574</div>
+      </div>
+    </a>
+    <a href="https://instagram.com/gab_noliveira" class="contact-link" target="_blank">
+      <div class="contact-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+      </div>
+      <div>
+        <div class="contact-link-label">Instagram</div>
+        <div class="contact-link-value">@gab_noliveira</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<footer>© 2025 Gabriela Oliveira — Editora de Vídeos</footer>
+
+<script>
+  const videos = [
+    { id: '1NJPSLNFd0LG6-IOwpbC6JGFT5haCcBp0', title: 'Vídeo 01' },
+    { id: '15Qeoq5nduoJW-NwBkDvBNZTd9ACQRwn7', title: 'Vídeo 02' },
+    { id: '1J3k75iItCIrrqYfvpz_phBskMZYvuPQZ', title: 'Vídeo 03' },
+    { id: '1AEE5qQyC8hND5UixExyixeuBDsDkSbpR', title: 'Vídeo 04' },
+    { id: '1teemrPHiWTKXD5r8nXnmm1l4NafTHhVo', title: 'Vídeo 05' },
+    { id: '1z_El3KV7l7XkqY9tCtjS23GdWA17J0Q4', title: 'Vídeo 06' },
+    { id: '12kXmseirFXQkz4l3lOxGFPyxvL6S7BR0', title: 'Vídeo 07' },
+    { id: '1uC2znRZVEGLrMuYV9sAnTQqqrf9aeIjs', title: 'Vídeo 08' },
+  ];
+
+  const grid = document.getElementById('videosGrid');
+
+  videos.forEach((v, i) => {
+    const thumbUrl = `https://drive.google.com/thumbnail?id=${v.id}&sz=w400`;
+    const directUrl = `https://drive.google.com/file/d/${v.id}/view`;
+
+    const card = document.createElement('a');
+    card.className = 'video-card';
+    card.href = directUrl;
+    card.target = '_blank';
+    card.rel = 'noopener noreferrer';
+    card.innerHTML = `
+      <div class="video-thumb">
+        <img src="${thumbUrl}" alt="${v.title}" loading="lazy">
+        <div class="play-overlay">
+          <div class="play-btn">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="video-info">
+        <div class="video-num">0${i + 1}</div>
+        <div class="video-title">${v.title}</div>
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+</script>
+</body>
+</html>
