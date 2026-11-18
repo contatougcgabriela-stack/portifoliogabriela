@@ -1,0 +1,41 @@
+name: Atualizar portfólio com o Drive
+
+on:
+  schedule:
+    - cron: "17 9 * * *"   # todo dia às 06:17 (horário de Brasília)
+  workflow_dispatch:         # botão "Run workflow" para atualizar na hora
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atualizar-portfolio
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar ffmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+
+      - name: Sincronizar com a pasta do Drive
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          DRIVE_FOLDER_ID: 1QNJu_cV-sOI0ktSV8rG6B3rJZZrz843w
+        run: python3 scripts/atualizar_portfolio.py
+
+      - name: Publicar mudanças
+        run: |
+          git config user.name "Atualização automática"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A videos capas videos.json
+          if git diff --cached --quiet; then
+            echo "Sem mudanças."
+          else
+            git commit -m "Portfólio atualizado com vídeos do Drive"
+            git push
+          fi

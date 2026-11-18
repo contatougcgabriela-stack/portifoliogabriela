@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gabriela Oliveira — Editora de Vídeos</title>
+<title>Gabriela Oliveira | Editora de Vídeos</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -414,8 +414,62 @@
 
   @media (max-width: 680px) {
     .contact { grid-template-columns: 1fr; gap: 2rem; }
+    .video-card:hover .play-btn { transform: scale(.85); }
+    .play-overlay { background: rgba(26,26,26,.15); }
     .videos-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
     .services-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ===== Categorias ===== */
+  .cat-tabs { display: flex; gap: .6rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+  .cat-tab {
+    font-family: inherit; font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
+    padding: .6rem 1.2rem; border: 1px solid var(--border); background: transparent;
+    color: var(--mid); cursor: pointer; transition: all .2s;
+  }
+  .cat-tab:hover { border-color: var(--accent); color: var(--accent); }
+  .cat-tab.active { background: var(--charcoal); border-color: var(--charcoal); color: #fff; }
+
+  .cat-section { margin-bottom: 3.5rem; }
+  .cat-section:last-child { margin-bottom: 0; }
+  .cat-title {
+    font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 400;
+    margin-bottom: 1.5rem; display: flex; align-items: baseline; gap: .8rem;
+  }
+  .cat-title em { font-style: italic; color: var(--accent); }
+  .cat-title small { font-family: 'DM Sans', sans-serif; font-size: .7rem; letter-spacing: .12em; color: var(--light); }
+  .video-card { cursor: pointer; border: 0; padding: 0; text-align: left; font: inherit; width: 100%; }
+  .play-btn { transform: scale(.85); opacity: .9; }
+
+  /* ===== Player ===== */
+  .player {
+    position: fixed; inset: 0; z-index: 100; background: rgba(15,15,15,.92);
+    display: none; align-items: center; justify-content: center; padding: 2rem 1rem;
+  }
+  .player.open { display: flex; animation: fadeIn .25s; }
+  .player-box { position: relative; display: flex; flex-direction: column; align-items: center; gap: .9rem; }
+  .player video {
+    height: min(80vh, 760px); max-width: 92vw; aspect-ratio: 9/16; background: #000;
+    border-radius: 6px; box-shadow: 0 20px 60px rgba(0,0,0,.5); object-fit: contain;
+  }
+  .player-title { color: #fff; font-size: .85rem; letter-spacing: .06em; text-align: center; }
+  .player-title span { color: var(--accent); margin-right: .5rem; }
+  .player-close, .player-nav {
+    position: absolute; background: rgba(255,255,255,.12); color: #fff; border: 0; cursor: pointer;
+    width: 46px; height: 46px; border-radius: 50%; font-size: 1.4rem; line-height: 1;
+    display: flex; align-items: center; justify-content: center; transition: background .2s;
+  }
+  .player-close:hover, .player-nav:hover { background: var(--accent); }
+  .player-close { top: 1.2rem; right: 1.2rem; }
+  .player-nav.prev { left: 1.2rem; top: 50%; transform: translateY(-50%); }
+  .player-nav.next { right: 1.2rem; top: 50%; transform: translateY(-50%); }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  @media (max-width: 680px) {
+    .player video { height: auto; width: 92vw; max-height: 78vh; }
+    .player-nav { top: auto; bottom: 1.2rem; transform: none; }
+    .player-nav.prev { left: 25%; } .player-nav.next { right: 25%; }
+    .cat-title { font-size: 1.3rem; }
   }
 </style>
 </head>
@@ -429,7 +483,7 @@
   <div class="hero-body">
     <span class="hero-tag">Editora de vídeos curtos para internet</span>
     <h1>Vídeos que <em>param</em> o scroll.</h1>
-    <p class="hero-sub">Edição de conteúdo curto com ritmo, identidade e resultado — para criadores, marcas e UGC.</p>
+    <p class="hero-sub">Edição de conteúdo curto com ritmo, identidade e resultado para criadores, marcas e UGC.</p>
   </div>
   <div class="hero-footer">
     <div class="hero-contacts">
@@ -469,9 +523,10 @@
 <section class="portfolio" id="portfolio">
   <div class="portfolio-header">
     <h2>Trabalhos <em>recentes</em></h2>
-    <span class="portfolio-count">08 vídeos</span>
+    <span class="portfolio-count" id="videoCount"></span>
   </div>
-  <div class="videos-grid" id="videosGrid"></div>
+  <div class="cat-tabs" id="catTabs"></div>
+  <div id="videoSections"></div>
 </section>
 
 <section class="contact">
@@ -510,47 +565,122 @@
   </div>
 </section>
 
-<footer>© 2025 Gabriela Oliveira — Editora de Vídeos</footer>
+<footer>© 2026 Gabriela Oliveira · Editora de Vídeos</footer>
+
+<div class="player" id="player" role="dialog" aria-modal="true">
+  <button class="player-close" id="playerClose" aria-label="Fechar">✕</button>
+  <button class="player-nav prev" id="playerPrev" aria-label="Vídeo anterior">‹</button>
+  <div class="player-box">
+    <video id="playerVideo" controls playsinline preload="metadata"></video>
+    <div class="player-title" id="playerTitle"></div>
+  </div>
+  <button class="player-nav next" id="playerNext" aria-label="Próximo vídeo">›</button>
+</div>
 
 <script>
-  const videos = [
-    { id: '1NJPSLNFd0LG6-IOwpbC6JGFT5haCcBp0', title: 'Vídeo 01' },
-    { id: '15Qeoq5nduoJW-NwBkDvBNZTd9ACQRwn7', title: 'Vídeo 02' },
-    { id: '1J3k75iItCIrrqYfvpz_phBskMZYvuPQZ', title: 'Vídeo 03' },
-    { id: '1AEE5qQyC8hND5UixExyixeuBDsDkSbpR', title: 'Vídeo 04' },
-    { id: '1teemrPHiWTKXD5r8nXnmm1l4NafTHhVo', title: 'Vídeo 05' },
-    { id: '1z_El3KV7l7XkqY9tCtjS23GdWA17J0Q4', title: 'Vídeo 06' },
-    { id: '12kXmseirFXQkz4l3lOxGFPyxvL6S7BR0', title: 'Vídeo 07' },
-    { id: '1uC2znRZVEGLrMuYV9sAnTQqqrf9aeIjs', title: 'Vídeo 08' },
-  ];
+  // Os vídeos vêm do arquivo videos.json, que é atualizado automaticamente a partir da pasta do Drive.
+  const pad = n => String(n).padStart(2, '0');
+  const sections = document.getElementById('videoSections');
+  const tabs = document.getElementById('catTabs');
+  const todos = [];
 
-  const grid = document.getElementById('videosGrid');
+  fetch('videos.json?v=' + Date.now())
+    .then(r => r.json())
+    .then(montar)
+    .catch(() => { sections.innerHTML = '<p style="color:var(--mid)">Não foi possível carregar os vídeos agora.</p>'; });
 
-  videos.forEach((v, i) => {
-    const thumbUrl = `https://drive.google.com/thumbnail?id=${v.id}&sz=w400`;
-    const directUrl = `https://drive.google.com/file/d/${v.id}/view`;
+  function montar(dados) {
+    const categorias = dados.ordem_categorias
+      .map(nome => ({ nome, videos: dados.videos.filter(v => v.categoria === nome) }))
+      .filter(c => c.videos.length);
 
-    const card = document.createElement('a');
-    card.className = 'video-card';
-    card.href = directUrl;
-    card.target = '_blank';
-    card.rel = 'noopener noreferrer';
-    card.innerHTML = `
-      <div class="video-thumb">
-        <img src="${thumbUrl}" alt="${v.title}" loading="lazy">
-        <div class="play-overlay">
-          <div class="play-btn">
-            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+    categorias.forEach((cat, ci) => {
+      const sec = document.createElement('div');
+      sec.className = 'cat-section';
+      sec.dataset.cat = ci;
+      const palavras = cat.nome.split(' ');
+      const ultima = palavras.pop();
+      const titleHtml = (palavras.length ? palavras.join(' ') + ' ' : '') + `<em>${ultima}</em>`;
+      sec.innerHTML = `<h3 class="cat-title">${titleHtml} <small>${pad(cat.videos.length)} vídeos</small></h3><div class="videos-grid"></div>`;
+      const grid = sec.querySelector('.videos-grid');
+
+      cat.videos.forEach((v, i) => {
+        const idx = todos.length;
+        todos.push({ ...v, cat: cat.nome });
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'video-card';
+        card.setAttribute('aria-label', `Assistir: ${v.titulo}`);
+        card.innerHTML = `
+          <div class="video-thumb">
+            <img src="capas/${v.arquivo}.jpg" alt="${v.titulo}" loading="lazy">
+            <div class="play-overlay">
+              <div class="play-btn">
+                <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="video-info">
-        <div class="video-num">0${i + 1}</div>
-        <div class="video-title">${v.title}</div>
-      </div>
-    `;
+          <div class="video-info">
+            <div class="video-num">${pad(i + 1)} · ${cat.nome.toUpperCase()}</div>
+            <div class="video-title">${v.titulo}</div>
+          </div>`;
+        card.addEventListener('click', () => abrir(idx));
+        grid.appendChild(card);
+      });
+      sections.appendChild(sec);
+    });
 
-    grid.appendChild(card);
+    document.getElementById('videoCount').textContent = `${pad(todos.length)} vídeos`;
+
+    const filtros = [{ nome: 'Todos', ci: 'all' }, ...categorias.map((c, ci) => ({ nome: c.nome, ci }))];
+    filtros.forEach((f, k) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cat-tab' + (k === 0 ? ' active' : '');
+      btn.textContent = f.nome;
+      btn.addEventListener('click', () => {
+        tabs.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        sections.querySelectorAll('.cat-section').forEach(s => {
+          s.style.display = (f.ci === 'all' || String(f.ci) === s.dataset.cat) ? '' : 'none';
+        });
+      });
+      tabs.appendChild(btn);
+    });
+  }
+
+  // Player
+  const player = document.getElementById('player');
+  const pv = document.getElementById('playerVideo');
+  const pt = document.getElementById('playerTitle');
+  let atual = 0;
+
+  function abrir(i) {
+    atual = (i + todos.length) % todos.length;
+    const v = todos[atual];
+    pv.src = `videos/${v.arquivo}.mp4`;
+    pv.poster = `capas/${v.arquivo}.jpg`;
+    pt.innerHTML = `<span>${v.cat}</span>${v.titulo}`;
+    player.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    pv.play().catch(() => {});
+  }
+  function fechar() {
+    pv.pause();
+    pv.removeAttribute('src');
+    pv.load();
+    player.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('playerClose').addEventListener('click', fechar);
+  document.getElementById('playerPrev').addEventListener('click', () => abrir(atual - 1));
+  document.getElementById('playerNext').addEventListener('click', () => abrir(atual + 1));
+  player.addEventListener('click', e => { if (e.target === player) fechar(); });
+  document.addEventListener('keydown', e => {
+    if (!player.classList.contains('open')) return;
+    if (e.key === 'Escape') fechar();
+    if (e.key === 'ArrowLeft') abrir(atual - 1);
+    if (e.key === 'ArrowRight') abrir(atual + 1);
   });
 </script>
 </body>
